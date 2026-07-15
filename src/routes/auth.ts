@@ -104,6 +104,7 @@ router.post('/register', async (req: AuthRequest, res: Response): Promise<any> =
 
     return res.status(201).json({
       message: 'Registration successful',
+      accessToken,
       user: {
         id: newUser._id,
         name: newUser.name,
@@ -176,6 +177,7 @@ router.post('/login', async (req: AuthRequest, res: Response): Promise<any> => {
 
     return res.json({
       message: 'Login successful',
+      accessToken,
       user: {
         id: user._id,
         name: user.name,
@@ -272,6 +274,7 @@ router.post('/google-login', async (req: AuthRequest, res: Response): Promise<an
 
     return res.json({
       message: 'Google login successful',
+      accessToken,
       user: {
         id: user._id,
         name: user.name,
