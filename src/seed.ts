@@ -28,7 +28,7 @@ const seedDatabase = async () => {
 
     // 1. Create Users
     console.log('Seeding users...');
-    const hashedPassword = await bcrypt.hash('adminpassword123', 10);
+    const hashedPassword = await bcrypt.hash('Admin@123456', 10);
 
     const admin = new User({
       name: 'Admin Forge',
