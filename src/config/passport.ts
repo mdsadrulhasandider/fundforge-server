@@ -43,7 +43,10 @@ passport.use(
         if (assignedRole === 'Supporter') {
           await CreditTransaction.create({
             userId: user._id,
+            userEmail: user.email,
             amount: 1000,
+            balanceBefore: 0,
+            balanceAfter: 1000,
             type: 'bonus',
             description: '1,000 Sign Up Bonus Credits for Google Sign-In',
             status: 'success'
