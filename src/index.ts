@@ -1,13 +1,14 @@
 import dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
 
+import 'dotenv/config';
+
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
 import { connectDB } from './config/db';
 import passport from 'passport';
 import './config/passport';
@@ -21,9 +22,6 @@ import paymentRoutes from './routes/payments';
 import notificationRoutes from './routes/notifications';
 import reportRoutes from './routes/reports';
 import adminRoutes from './routes/admin';
-
-// Load Env variables
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
