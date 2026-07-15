@@ -87,20 +87,6 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/admin', adminRoutes);
 
-// ONE-TIME admin password reset (remove after use)
-app.get('/api/reset-admin-x9k2m', async (req: Request, res: Response) => {
-  try {
-    const bcrypt = await import('bcryptjs');
-    const { User } = await import('./models/User');
-    const newHash = await bcrypt.hash('Admin@123456', 10);
-    const result = await User.updateOne({ email: 'admin@fundforge.com' }, { $set: { password: newHash } });
-    if (result.matchedCount === 0) return res.status(404).json({ message: 'Admin user not found' });
-    return res.json({ message: 'Admin password updated to Admin@123456', modified: result.modifiedCount });
-  } catch (err: any) {
-    return res.status(500).json({ message: err.message });
-  }
-});
-
 // 404 Route handler
 app.use((req: Request, res: Response) => {
   res.status(404).json({ message: 'API Endpoint Not Found' });
