@@ -2,13 +2,17 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User';
 
-export interface AuthRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    role: 'Supporter' | 'Creator' | 'Admin';
-  };
+declare global {
+  namespace Express {
+    interface User {
+      id: string;
+      email: string;
+      role: 'Supporter' | 'Creator' | 'Admin';
+    }
+  }
 }
+
+export interface AuthRequest extends Request {}
 
 export const verifyJWT = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   // Support both HttpOnly cookies and authorization headers for compatibility

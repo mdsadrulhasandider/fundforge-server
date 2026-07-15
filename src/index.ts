@@ -9,6 +9,8 @@ import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db';
+import passport from 'passport';
+import './config/passport';
 
 // Import Routes
 import authRoutes from './routes/auth';
@@ -60,6 +62,7 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
+app.use(passport.initialize());
 
 // Rate Limiting
 const limiter = rateLimit({

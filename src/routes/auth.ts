@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { User } from '../models/User';
 import { CreditTransaction } from '../models/CreditTransaction';
 import { verifyJWT, AuthRequest } from '../middleware/auth';
+import passport from 'passport';
 
 const router = Router();
 
@@ -355,5 +356,54 @@ router.put('/profile', verifyJWT, async (req: AuthRequest, res: Response): Promi
     return res.status(500).json({ message: 'Server error updating profile' });
   }
 });
+
+// @route   GET /auth/google
+// @desc    Redirect to Google OAuth consent screen
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// @route   GET /auth/google/callback
+// @desc    OAuth Callback landing page
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { session: false, failureRedirect: '/login' }),
+  async (req: any, res: Response): Promise<any> => {
+    try {
+      const user = req.user;
+      if (!user) {
+        return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/login?error=auth_failed`);
+      }
+
+      // Create JWT tokens
+      const accessToken = jwt.sign(
+        { id: user._id, email: user.email, role: user.role },
+        process.env.JWT_ACCESS_SECRET || 'access_secret',
+        { expiresIn: '15m' }
+      );
+
+      const refreshToken = jwt.sign(
+        { id: user._id, email: user.email, role: user.role },
+        process.env.JWT_REFRESH_SECRET || 'refresh_secret',
+        { expiresIn: '7d' }
+      );
+
+      // Set Cookies
+      res.cookie('accessToken', accessToken, {
+        ...cookieOptions,
+        maxAge: 15 * 60 * 1000 // 15 mins
+      });
+
+      res.cookie('refreshToken', refreshToken, {
+        ...cookieOptions,
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
+
+      // Redirect user to their client dashboard
+      return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/dashboard`);
+    } catch (error) {
+      console.error('Google OAuth callback error:', error);
+      return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/login?error=server_error`);
+    }
+  }
+);
 
 export default router;
